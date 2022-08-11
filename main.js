@@ -1,3 +1,6 @@
+import { fstat } from 'node:fs';
+
+
 let names = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 let suits = ["Hearts", "Clubs", "Spades", "Diamonds"]
 let cards= [];
@@ -5,8 +8,14 @@ let card = {
     cardName: "",
     suit:"",
     color: "",
-    value :0
+    value :0,
+    img:""
 }
+
+let imgArray = fs.readdir(singleCards)
+imgArray.forEach(image => { card.img = image
+    
+});
 
 function createDeck()
 {
@@ -14,12 +23,24 @@ function createDeck()
     {
         for (let j = 0; j < names.length; j++)
         {
-            card.cardName = names[j];
-            card.suit = suits[i];
-            card.value = j + 1;
-            console.log(card);
-            cards.push(card);
+            newCard = Object.create(card);
+
+            if (i == 0 || i == 3)
+            {
+                newCard.color = "red";
+            }
+            else
+            {
+                newCard.color = "black";
+            }
+            
+            newCard.cardName = names[j];
+            newCard.suit = suits[i];
+            newCard.value = j + 1;
+            cards.push(newCard);
+            
         }
+        
     }
 }
 createDeck();
