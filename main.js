@@ -1,3 +1,5 @@
+
+
 let playPileCenter = [
     playPile1 = [], playPile2 = [], playPile3 = [],playPile4 = [], playPile5 = [], playPile6 = [], playPile7 = []
   ];
@@ -8,16 +10,18 @@ let playPileCenter = [
   let suits = ["Heart", "Club", "Spade", "Diamond"];
   let cards=[];
   let card = {
-      createCardDiv() {
+      cardDiv: function(img) {
           cardDiv = document.createElement('div');
           cardDiv.classList.add("card");
-          return cardDiv;
+          
+          cardDiv.setAttribute("style", `background-image: url(${img});`);
+          return usableCardDiv = cardDiv;
       },
+      usableCardDiv: "ITS NOT UNDEFINED ITS JUST NOT DOING ANYTHING",
       cardName: "",
       suit:"",
       color: "",
-      value : 0,
-      img:""
+      value : 0
   }
   
   
@@ -77,14 +81,17 @@ let playPileCenter = [
               newCard.value = j + 1;
   
               if (newCard.value <= 10){
-                  newCard.img = `singleCards/${newCard.suit}-${newCard.value}.svg`;
+                    newCard.usableCardDiv = newCard.cardDiv(`singleCards/${newCard.suit}-${newCard.value}.svg`);
+                 // console.log(newCard.cardDiv(`singleCards/${newCard.suit}-${newCard.value}.svg`));
+
+                 /*  newCard.img = `singleCards/${newCard.suit}-${newCard.value}.svg`; */
               }
               else{
-                  newCard.img = `singleCards/${newCard.suit}-${newCard.value}-${newCard.cardName}.svg`;
+                    newCard.usableCardDiv = newCard.cardDiv(`singleCards/${newCard.suit}-${newCard.value}-${newCard.cardName}.svg`);
+                   /*  newCard.img = `singleCards/${newCard.suit}-${newCard.value}-${newCard.cardName}.svg`; */
               }
               
               array.push(newCard);
-              
           }
           
       }
@@ -92,11 +99,13 @@ let playPileCenter = [
   function appendCard(currCard, containerClass, pileArray) 
   {
       let container = document.querySelector(containerClass);
-      let cardDiv = document.createElement('div');
-      cardDiv.classList.add("card");
+      //console.log(currCard[0].usableCardDiv);
+      currCard[0].usableCardDiv;
       pileArray.push(currCard);
-      console.log(pileArray);
-      return container.appendChild(cardDiv);
+     // currCard[0].cardDiv().setAttribute('style', 'background-image = ${') = `${currCard[0].img})`;
+      //console.log(pileArray);
+     // console.log(currCard[0].cardName);
+      return container.appendChild(currCard[0].usableCardDiv);
   }
   function createField(size, containerClass, className)
   {
@@ -128,14 +137,22 @@ let playPileCenter = [
      for(j = 0; j < i + 1; j++) 
      {
   
-     let currCard = appendCard(placeCard(shuffled), `.${pile.className}`, playPileCenter[i]);
-     //console.log(currCard);
+     appendCard(placeCard(shuffled), `.${pile.className}`, playPileCenter[i]);
      }
   }
-  
+  let currPile = playPileCenter[1];
+  //let theDiv = document.querySelector(currPile[0]);
+  console.log(currPile[0].usableCardDiv);
   function checkDragged()
   {
-      
+    for(let i = 0; i < 7; i++) 
+    {
+      if (playPileCenter[i].length ) 
+      {
+
+      }
+    }
   }
+  
   
   
