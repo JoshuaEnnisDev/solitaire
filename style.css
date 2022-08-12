@@ -1,0 +1,27 @@
+*{
+    margin:0;
+}
+
+
+.deck {
+    display:flex;
+    flex-wrap: wrap;
+
+}
+.card{
+    scale:0.5;
+    padding: 20px;
+    height:312px; 
+    width:222px; 
+    border: 5px solid blue
+
+}
+.top{
+    display:flex;
+}
+.middle{
+    display:flex;
+}
+.bottom{
+    display:flex;
+}
