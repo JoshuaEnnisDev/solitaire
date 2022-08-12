@@ -1,14 +1,23 @@
 //globals
-let playPile1, playPile2, playPile3,playPile4, playPile5, playPile6, playPile7 = [];
-let acePile1, acePile2, acePile3, acePile4 = [];
+let playPileCenter = [
+  playPile1 = [], playPile2 = [], playPile3 = [],playPile4 = [], playPile5 = [], playPile6 = [], playPile7 = []
+];
+let acePileCenter = [
+    acePile1 = [], acePile2 = [], acePile3 = [], acePile4 = []
+]
 let names = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"];
 let suits = ["Heart", "Club", "Spade", "Diamond"];
 let cards=[];
 let card = {
+    createCardDiv() {
+        cardDiv = document.createElement('div');
+        cardDiv.classList.add("card");
+        return cardDiv;
+    },
     cardName: "",
     suit:"",
     color: "",
-    value :0,
+    value : 0,
     img:""
 }
 
@@ -42,6 +51,7 @@ function drawCard(array)
 function placeCard(array)
 {
     let card = array.shift();
+    //console.log(card);
     return card;
 }
 
@@ -80,18 +90,24 @@ function createDeck(array)
         
     }
 }
-
+function appendCard(currCard, containerClass, pileArray) 
+{
+    let container = document.querySelector(containerClass);
+    let cardDiv = document.createElement('div');
+    cardDiv.classList.add("card");
+    pileArray.push(currCard);
+    console.log(pileArray);
+    return container.appendChild(cardDiv);
+}
 function createField(size, containerClass, className)
 {
-    for (let i = 0; i < size; i++)
-    {
-        placeCard(cards);
-    }
+    
     
     let container = document.querySelector(containerClass);
     let pile = document.createElement('div');
     pile.classList.add(className);
-    return container.appendChild(pile);
+    container.appendChild(pile);
+    return pile;
     
 }
 
@@ -103,20 +119,27 @@ for(i = 0; i < 4; i++)
 }
 */
 
+let unShuffled = createDeck(cards);
+let shuffled = shuffle(unShuffled);
+
 /* Create and fill 7 play piles */
 for(i = 0; i < 7; i++) 
 {
-    createField(i + 1, ".middle", `.column${i + 1}`);
-    //appendCard()
+   let pile = createField(i + 1, ".middle", `playPile${i + 1}`);
+   for(j = 0; j < i + 1; j++) 
+   {
+
+   let currCard = appendCard(placeCard(shuffled), `.${pile.className}`, playPileCenter[i]);
+   //console.log(currCard);
+   }
 }
 
 function checkDragged()
 {
+    
 }
-let unShuffled = createDeck(cards);
-let shuffled = shuffle(unShuffled);
 
-const holder = document.querySelector('#deck');
+
 
 
 
