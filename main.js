@@ -119,6 +119,7 @@ let playPileCenter = {
         console.log(currCard.usableCardDiv)
         dropArray.unshift(currCard);
         dropDiv.appendChild(currCard.usableCardDiv)
+        dropDiv = currCard.usableCardDiv;
       }
       // currCard[0].cardDiv().setAttribute('style', 'background-image = ${') = `${currCard[0].img})`;
       console.log(dropArray);
