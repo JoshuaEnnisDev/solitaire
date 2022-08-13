@@ -32,12 +32,14 @@ let playPileCenter = {
   
   //start helper functions
   
+  /* Returns a random card object */
   function getRandomCard(array)
   {
       let rand = Math.floor(Math.random() * (array.length));
       return array.splice(rand, 1)[0];
   }
   
+  /* Returns a shuffled deck array of size 52 */
   function shuffle()
   {
       let shuffledDeck = [];
@@ -56,13 +58,10 @@ let playPileCenter = {
       array.unshift(card);
       return card;
   }
-  function placeCard(array)
-  {
-      let card = array.shift();
-      //console.log(card);
-      return card;
-  }
-  
+
+  /* Initalize all object information for a standard 52 card deck, including: 
+     the suit of a card: card.suit*/
+
   function createDeck(array)
   {
       
@@ -268,6 +267,7 @@ function drop(e) {
       createField(i, ".top", ".column");
   }
   */
+
   // Initial deck creation and shuffling
   let unShuffled = createDeck(cards);
   let dictDeck = unShuffled;
