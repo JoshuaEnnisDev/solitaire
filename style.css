@@ -10,7 +10,8 @@
 }
 .card{
     scale:0.5;
-    padding: 20px;
+    padding: -50px;
+    margin: -50px;
     height:312px; 
     width:222px; 
     border: 5px solid blue
@@ -24,4 +25,7 @@
 }
 .bottom{
     display:flex;
+}
+.hide {
+    display: none;
 }
