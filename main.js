@@ -1,8 +1,14 @@
 
 
+
 let playPileCenter = {
     "playPile1" : [], "playPile2" : [], "playPile3" : [], "playPile4": [], "playPile5" : [], "playPile6" : [], "playPile7" : []
 };
+
+let playPileCenter = [
+    playPile1 = [], playPile2 = [], playPile3 = [],playPile4 = [], playPile5 = [], playPile6 = [], playPile7 = []
+  ];
+  
   let acePileCenter = [
       acePile1 = [], acePile2 = [], acePile3 = [], acePile4 = []
   ]
@@ -36,6 +42,7 @@ let playPileCenter = {
   {
       let rand = Math.floor(Math.random() * (array.length));
       return array.splice(rand, 1)[0];
+
   }
   
   function shuffle()
@@ -89,11 +96,17 @@ let playPileCenter = {
                     newCard.usableCardDiv = newCard.cardDiv(`singleCards/${newCard.suit}-${newCard.value}.svg`);
                  // console.log(newCard.cardDiv(`singleCards/${newCard.suit}-${newCard.value}.svg`));
 
+
                     newCard.front = `singleCards/${newCard.suit}-${newCard.value}.svg`;
               }
               else{
                     newCard.usableCardDiv = newCard.cardDiv(`singleCards/${newCard.suit}-${newCard.value}-${newCard.cardName}.svg`);
                     newCard.front = `singleCards/${newCard.suit}-${newCard.value}-${newCard.cardName}.svg`; 
+                 /*  newCard.img = `singleCards/${newCard.suit}-${newCard.value}.svg`; */
+              }
+              else{
+                    newCard.usableCardDiv = newCard.cardDiv(`singleCards/${newCard.suit}-${newCard.value}-${newCard.cardName}.svg`);
+                   /*  newCard.img = `singleCards/${newCard.suit}-${newCard.value}-${newCard.cardName}.svg`; */
               }
               
               array.push(newCard);
@@ -101,7 +114,6 @@ let playPileCenter = {
           
       }
   }
-
 
   /* Appends spliceRemove card(s) both in memory and visually based upon:
    the array it is coming from: deckArray, 
@@ -295,5 +307,63 @@ function drop(e) {
         }
      }
   }
+  function appendCard(currCard, containerClass, pileArray) 
+  {
+      let container = document.querySelector(containerClass);
+      //console.log(currCard[0].usableCardDiv);
+      currCard[0].usableCardDiv;
+      pileArray.push(currCard);
+     // currCard[0].cardDiv().setAttribute('style', 'background-image = ${') = `${currCard[0].img})`;
+      //console.log(pileArray);
+     // console.log(currCard[0].cardName);
+      return container.appendChild(currCard[0].usableCardDiv);
+  }
+  function createField(size, containerClass, className)
+  {
+      
+      
+      let container = document.querySelector(containerClass);
+      let pile = document.createElement('div');
+      pile.classList.add(className);
+      container.appendChild(pile);
+      return pile;
+      
+  }
+  
+  
+  /* Create 4 ace piles 
+  for(i = 0; i < 4; i++) 
+  {
+      createField(i, ".top", ".column");
+  }
+  */
+  
+  let unShuffled = createDeck(cards);
+  let shuffled = shuffle(unShuffled);
+  
+  /* Create and fill 7 play piles */
+  for(i = 0; i < 7; i++) 
+  {
+     let pile = createField(i + 1, ".middle", `playPile${i + 1}`);
+     for(j = 0; j < i + 1; j++) 
+     {
+  
+     appendCard(placeCard(shuffled), `.${pile.className}`, playPileCenter[i]);
+     }
+  }
+  let currPile = playPileCenter[1];
+  //let theDiv = document.querySelector(currPile[0]);
+  console.log(currPile[0].usableCardDiv);
+  function checkDragged()
+  {
+    for(let i = 0; i < 7; i++) 
+    {
+      if (playPileCenter[i].length ) 
+      {
+
+      }
+    }
+  }
+  
   
   
