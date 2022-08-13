@@ -35,7 +35,7 @@ let playPileCenter = {
   function getRandomCard(array)
   {
       let rand = Math.floor(Math.random() * (array.length));
-      return array.splice(rand, 1);
+      return array.splice(rand, 1)[0];
   }
   
   function shuffle()
@@ -101,19 +101,29 @@ let playPileCenter = {
           
       }
   }
-  function appendCard(deckArray, containerIdOrClass, containerArray) 
+  function appendCard(deckArray, dropArray, dropIdOrClass, pileType, spliceRemove) 
   {
-      let currCard = placeCard(deckArray);
-      let dropDiv = document.querySelector(containerIdOrClass);
+    console.log(deckArray)
+      let currCardArray = deckArray.splice(0, spliceRemove);
+      let dropDiv = document.querySelector(dropIdOrClass);
       //console.log(currCard[0].usableCardDiv);
 
-      // Places
-      containerArray.unshift(currCard);
-     // currCard[0].cardDiv().setAttribute('style', 'background-image = ${') = `${currCard[0].img})`;
-      console.log(containerArray);
+      // Places the card in the memory in dropArray and visually in the gui representation
+      for(let i = spliceRemove - 1; i > -1; i--) {
+
+        currCard = currCardArray[i]
+        console.log(`SPLICE REMOVE LOOP ####################`)
+        console.log(currCard)
+        console.log(currCard)
+        console.log(i)
+        console.log(currCard.usableCardDiv)
+        dropArray.unshift(currCard);
+        dropDiv.appendChild(currCard.usableCardDiv)
+      }
+      // currCard[0].cardDiv().setAttribute('style', 'background-image = ${') = `${currCard[0].img})`;
+      console.log(dropArray);
      // console.log(currCard[0].cardName);
-     dropDiv.appendChild(currCard[0].usableCardDiv)
-      return currCard;
+      return currCardArray[0];
   }
   function loadPlayPile(currCard, containerClass, pileArray) 
   {
@@ -146,7 +156,7 @@ function drop(e) {
     let draggedCardPile = draggedCard.parentElement;
     let dropCard = e.target;
     let dropCardPile = e.target.parentElement;
-    let totalCardStack = 0;
+    let totalCardStack = 1;
     // Find the pile of the currently dragged card, going through each div until it reaches the outermost pile div
     while(!draggedCardPile.classList.contains('pile'))
     {
@@ -166,18 +176,18 @@ function drop(e) {
         (draggedCard.dataset.value == dropCard.dataset.value - 1 ||
         draggedCard.dataset.value == dropCard.dataset.value - 1)) 
         {
-            for(let i = totalCardStack; totalCardStack > 0; i--)
-            {
+            let stackSize = draggedCard.childElementCount + 1;
+            console.log(stackSize)
+            
                 let draggedCardArray = playPileCenter[draggedCardPile.id]
-                appendCard(draggedCardArray[i], `#${draggedCardPile.id}`, playPileCenter[dropCardPile.id])
+                let droppedCardArray = playPileCenter[dropCardPile.id]
+                appendCard(draggedCardArray, droppedCardArray,`#${draggedCardPile.id}`, `playPile`, stackSize)
                 console.log(`${i}th loop header /n /n`)
                 console.log(draggedCardArray[0])
-                console.log(playPileCenter[draggedCardPile.id])
-                console.log(playPileCenter[dropCardPile.id])
-                dropCardPile = draggedCardPile.parentElement;
+                console.log(draggedCardArray)
+                console.log(droppedCardArray)
                 /* e.target.appendChild(draggedCard); */
-                draggedCard = draggedCard.parentElement;
-            }
+
             for(let i = 0; i < 7; i++) {
                 if(draggedCardPile.id == `playPile${i + 1}`)
                 {
@@ -258,11 +268,14 @@ function drop(e) {
      
      for(j = 0; j < i + 1; j++) 
      {
-     let currCard = appendCard(shuffled, `#${pile.id}`, playPileCenter[`playPile${i + 1}`]);
+        console.log(shuffled)
+     let currCard = appendCard(shuffled, playPileCenter[`playPile${i + 1}`], `#${pile.id}`, "playPile", 1);
+     console.log('it appended')
      if (j == i)
      {
        /*  console.log(currCard[0]); */
-        turnCardActive(currCard[0], i);  
+       console.log(currCard)
+        turnCardActive(currCard, i);  
      }    
      else
      {
