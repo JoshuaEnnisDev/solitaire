@@ -1,5 +1,4 @@
 
-
 let playPileCenter = {
     "playPile1" : [], "playPile2" : [], "playPile3" : [], "playPile4": [], "playPile5" : [], "playPile6" : [], "playPile7" : []
 };
@@ -295,5 +294,3 @@ function drop(e) {
         }
      }
   }
-  
-  
