@@ -101,6 +101,12 @@ let playPileCenter = {
           
       }
   }
+
+
+  /* Appends spliceRemove card(s) both in memory and visually based upon:
+   the array it is coming from: deckArray, 
+   the array it is going to: dropArray,
+   and the container of dropArray: found by dropIdOrClass  */
   function appendCard(deckArray, dropArray, dropIdOrClass, pileType, spliceRemove) 
   {
     console.log(deckArray)
@@ -126,32 +132,29 @@ let playPileCenter = {
      // console.log(currCard[0].cardName);
       return currCardArray[0];
   }
-  function loadPlayPile(currCard, containerClass, pileArray) 
-  {
-      let container = document.querySelector(containerClass);
-      //console.log(currCard[0].usableCardDiv);
-      currCard[0].usableCardDiv;
-      pileArray.push(currCard);
-     // currCard[0].cardDiv().setAttribute('style', 'background-image = ${') = `${currCard[0].img})`;
-      //console.log(pileArray);
-     // console.log(currCard[0].cardName);
-      return container.appendChild(currCard[0].usableCardDiv);
-  }
+
+
+  /* Displays a drop prompt over a valid drop object */
   function allowDrop(e) {
     e.preventDefault();
   }
-  
+
+
+  /* Holds a dragged objects data in memory */
   function dragStart(e) {
-    console.log("please")
     e.dataTransfer.setData('text/plain', e.target.id);
     // Hides the card when dragging it, cannot make it revert if no valid drop yet
     /* setTimeout(() => {
        e.target.classList.add('hide');
     }, 0); */
 }
+
+
+/*  Drops the currently selected card on top of another both in memory and visually if it meets certain conditions
+    dependent on the dropDiv's class */
 function drop(e) {
 
-    // get the draggable element
+    // Get the draggable element
     const id = e.dataTransfer.getData('text/plain');
     let draggedCard = document.getElementById(id);
     let draggedCardPile = draggedCard.parentElement;
@@ -164,6 +167,7 @@ function drop(e) {
         draggedCardPile = draggedCardPile.parentElement;
         totalCardStack++;
     }
+    // Find the pile of the drop card, going through each div until it reaches the outermost pile div
     while(!dropCardPile.classList.contains('pile'))
     {
         dropCardPile = dropCardPile.parentElement;
@@ -172,23 +176,25 @@ function drop(e) {
     console.log(draggedCardPile)
     console.log(draggedCard.id)
     console.log(dropCard.id)
-    // add it to the drop target
+    // Checks the draggedCard's color and value to see if it is eligible to be dropped on the dropCard
+        // if so, places the dragged card on top of the drop card event both in memory and visually
     if (draggedCard.dataset.color != dropCard.dataset.color &&
-        (draggedCard.dataset.value == dropCard.dataset.value - 1 ||
-        draggedCard.dataset.value == dropCard.dataset.value - 1)) 
+        (draggedCard.dataset.value == dropCard.dataset.value - 1))
         {
             let stackSize = draggedCard.childElementCount + 1;
             console.log(stackSize)
+            let draggedCardArray = playPileCenter[draggedCardPile.id]
+            let droppedCardArray = playPileCenter[dropCardPile.id]
+            // Append the current dragged card and its children to the current dropcard
+            appendCard(draggedCardArray, droppedCardArray,`#${draggedCardPile.id}`, `between`, stackSize)
+            // Turn the new top card to an active state
+            turnCardActive(draggedCardArray[0])
+            console.log(`${i}th loop header /n /n`)
+            console.log(draggedCardArray[0])
+            console.log(draggedCardArray)
+            console.log(droppedCardArray)
             
-                let draggedCardArray = playPileCenter[draggedCardPile.id]
-                let droppedCardArray = playPileCenter[dropCardPile.id]
-                appendCard(draggedCardArray, droppedCardArray,`#${draggedCardPile.id}`, `playPile`, stackSize)
-                console.log(`${i}th loop header /n /n`)
-                console.log(draggedCardArray[0])
-                console.log(draggedCardArray)
-                console.log(droppedCardArray)
-                /* e.target.appendChild(draggedCard); */
-
+            // Console.log function to keep track of arrays in memory
             for(let i = 0; i < 7; i++) {
                 if(draggedCardPile.id == `playPile${i + 1}`)
                 {
@@ -209,18 +215,19 @@ function drop(e) {
             }
             console.log(playPileCenter[draggedCardPile.id])
             console.log(playPileCenter[dropCardPile.id])
+            // Append the current div to the dropDiv visually to follow the memory
             e.target.appendChild(draggedCard);
         //  draggedCard.classList.remove('hide');
 
     }
     else
     {
-      //  e.target.appendChild(draggedCard);
+
     }
-    // e.target.appendChild(draggedCard);
-    // draggable.classList.remove('hide');
 }
 
+
+  /* Create field div, set its class and id to the idName, and append it to the containerClass div */
   function createField(size, containerClass, idName)
   {
       
@@ -233,10 +240,12 @@ function drop(e) {
       return pile;
       
   }
-  // Add all identifying card information to the usableCardDiv and add event listeners to listen for drops and drags for each active/visible card
-  
+
+
+  /* Add all identifying card information to the usableCardDiv and add event listeners to listen for drops and drags for each active/visible card */ 
   function turnCardActive(currCard) 
   {
+    // Set all div information
     cardDiv = currCard.usableCardDiv;
     cardDiv.dataset.suit = currCard.suit;
     cardDiv.dataset.color = currCard.color;
@@ -245,6 +254,8 @@ function drop(e) {
     cardDiv.draggable = "true";
     cardDiv.setAttribute("style", `background-image: url(${currCard.front});`);
     cardDiv.id = `${currCard.value}${currCard.suit.charAt(0)}`;
+
+    // Set event listeners for drag and drop usage
     cardDiv.addEventListener('dragstart', dragStart);
     cardDiv.addEventListener('dragover', allowDrop);
     cardDiv.addEventListener('drop', drop);
@@ -257,7 +268,7 @@ function drop(e) {
       createField(i, ".top", ".column");
   }
   */
-  
+  // Initial deck creation and shuffling
   let unShuffled = createDeck(cards);
   let dictDeck = unShuffled;
   let shuffled = shuffle(unShuffled);
@@ -266,25 +277,23 @@ function drop(e) {
   for(i = 0; i < 7; i++) 
   {
      let pile = createField(i + 1, ".middle", `playPile${i + 1}`);
-     
+     // Append up to 7 cards to the current pile, depending on the current pile number, i + 1
      for(j = 0; j < i + 1; j++) 
      {
-        console.log(shuffled)
-     let currCard = appendCard(shuffled, playPileCenter[`playPile${i + 1}`], `#${pile.id}`, "playPile", 1);
-     console.log('it appended')
-     if (j == i)
-     {
-       /*  console.log(currCard[0]); */
-       console.log(currCard)
-        turnCardActive(currCard, i);  
-     }    
-     else
-     {
-        console.log()
-        /* currCard[0].usableCardDiv.setAttribute("style", `background-image: url(${cardBack});`); */
-     }
+
+        let currCard = appendCard(shuffled, playPileCenter[`playPile${i + 1}`], `#${pile.id}`, "playPile", 1);
+        console.log('it appended')
+        if (j == i)
+        {
+            // Turn the top card of the current play pile to an active, draggable/droppable state
+            turnCardActive(currCard, i);  
+        }    
+        else
+        {
+            // Flip cards to their backs if they are under the top card in the 
+            currCard.usableCardDiv.setAttribute("style", `background-image: url(${cardBack});`);
+        }
      }
   }
-  //let theDiv = document.querySelector(currPile[0]);
   
   
