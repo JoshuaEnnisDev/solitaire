@@ -13,11 +13,10 @@ let playPileCenter = {
       cardDiv: function(img) {
           cardDiv = document.createElement('div');
           cardDiv.classList.add("card");
-          /* newSVG = document.createElement('IMG');
-          newSVG.src=`${img}`;
+          let newSVG = document.createElement('img');
+          newSVG.src = cardBack;
           cardDiv.appendChild(newSVG);
-          newSVG.setAttribute('style', 'display:flex; justify-content: center; height: auto; width: auto') */
-          cardDiv.setAttribute("style", `background-image: url(${img});`);
+          newSVG.setAttribute('style', 'display:flex; justify-content: center; height: auto; width: auto') 
           return usableCardDiv = cardDiv;
       },
       usableCardDiv: "ITS NOT UNDEFINED ITS JUST NOT DOING ANYTHING",
@@ -121,6 +120,7 @@ let playPileCenter = {
         console.log(currCard)
         console.log(i)
         console.log(currCard.usableCardDiv)
+        currCard.usableCardDiv.classList.add("childCard")
         dropArray.unshift(currCard);
         dropDiv.appendChild(currCard.usableCardDiv)
         dropDiv = currCard.usableCardDiv;
@@ -158,6 +158,7 @@ function drop(e) {
     let draggedCardPile = draggedCard.parentElement;
     let dropCard = e.target;
     let dropCardPile = e.target.parentElement;
+    
     let totalCardStack = 1;
     // Find the pile of the currently dragged card, going through each div until it reaches the outermost pile div
     while(!draggedCardPile.classList.contains('pile'))
@@ -214,6 +215,7 @@ function drop(e) {
             console.log(playPileCenter[draggedCardPile.id])
             console.log(playPileCenter[dropCardPile.id])
             // Append the current div to the dropDiv visually to follow the memory
+            e.target.classList.add("new-pile");
             e.target.appendChild(draggedCard);
         //  draggedCard.classList.remove('hide');
 
@@ -250,7 +252,8 @@ function drop(e) {
     cardDiv.dataset.value = currCard.value;
     cardDiv.dataset.active = "true";
     cardDiv.draggable = "true";
-    cardDiv.setAttribute("style", `background-image: url(${currCard.front});`);
+    cardDiv.firstChild.setAttribute('src', `${currCard.front}`);
+    // cardDiv.setAttribute("style", `background-image: url(${currCard.front});`);
     cardDiv.id = `${currCard.value}${currCard.suit.charAt(0)}`;
 
     // Set event listeners for drag and drop usage

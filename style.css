@@ -9,12 +9,11 @@
 
 }
 .card{
-    scale:0.5;
-    padding: -50px;
-    margin: -50px;
-    height:312px; 
+    padding: 20px;
+    height:310px; 
     width:222px; 
-    border: 5px solid blue
+    border: 5px solid blue;
+    margin-top: -220px;
 
 }
 .top{
@@ -28,4 +27,17 @@
 }
 .hide {
     display: none;
+}
+.pile{
+    display: flex;
+    flex-direction: column;
+    margin-top: 220px;
+}
+.new-pile{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+.childCard{
+    justify-content: flex-end;
 }
