@@ -12,11 +12,11 @@ let playPileCenter = {
   let card = {
       cardDiv: function(img) {
           cardDiv = document.createElement('div');
-          cardDiv.classList.add("card");
+          cardDiv.classList.add("card", "fill");
           let newSVG = document.createElement('img');
           newSVG.src = cardBack;
+          newSVG.classList.add("image", "fill");
           cardDiv.appendChild(newSVG);
-          newSVG.setAttribute('style', 'display:flex; justify-content: center; height: auto; width: auto') 
           return usableCardDiv = cardDiv;
       },
       usableCardDiv: "ITS NOT UNDEFINED ITS JUST NOT DOING ANYTHING",
@@ -136,8 +136,6 @@ let playPileCenter = {
   function allowDrop(e) {
     e.preventDefault();
   }
-
-
   /* Holds a dragged objects data in memory */
   function dragStart(e) {
     e.dataTransfer.setData('text/plain', e.target.id);
@@ -155,22 +153,27 @@ function drop(e) {
     // Get the draggable element
     const id = e.dataTransfer.getData('text/plain');
     let draggedCard = document.getElementById(id);
+    console.log(draggedCard)
+    if (draggedCard.classList.contains("image")) 
+    {
+        draggedCard = draggedCard.parentElement;
+    }
     let draggedCardPile = draggedCard.parentElement;
     let dropCard = e.target;
+    if (dropCard.classList.contains("image")) 
+    {
+        dropCard = dropCard.parentElement;
+    }
     let dropCardPile = e.target.parentElement;
-    
-    let totalCardStack = 1;
     // Find the pile of the currently dragged card, going through each div until it reaches the outermost pile div
     while(!draggedCardPile.classList.contains('pile'))
     {
         draggedCardPile = draggedCardPile.parentElement;
-        totalCardStack++;
     }
     // Find the pile of the drop card, going through each div until it reaches the outermost pile div
     while(!dropCardPile.classList.contains('pile'))
     {
         dropCardPile = dropCardPile.parentElement;
-        totalCardStack++;
     }
     console.log(draggedCardPile)
     console.log(draggedCard.id)
@@ -180,8 +183,12 @@ function drop(e) {
     if (draggedCard.dataset.color != dropCard.dataset.color &&
         (draggedCard.dataset.value == dropCard.dataset.value - 1))
         {
-            let stackSize = draggedCard.childElementCount + 1;
-            console.log(stackSize)
+            let stackSize = draggedCard.children;
+            console.log()
+            stackSize = Array.from(stackSize);
+            stackSize = stackSize.filter(element => !(element.classList.contains("image")));
+            stackSize = stackSize.length + 1;
+            console.log(`stacksize: ${stackSize}`);
             let draggedCardArray = playPileCenter[draggedCardPile.id]
             let droppedCardArray = playPileCenter[dropCardPile.id]
             // Append the current dragged card and its children to the current dropcard
@@ -215,8 +222,8 @@ function drop(e) {
             console.log(playPileCenter[draggedCardPile.id])
             console.log(playPileCenter[dropCardPile.id])
             // Append the current div to the dropDiv visually to follow the memory
-            e.target.classList.add("new-pile");
-            e.target.appendChild(draggedCard);
+            dropCard.classList.add("new-pile");
+            dropCard.appendChild(draggedCard);
         //  draggedCard.classList.remove('hide');
 
     }
@@ -251,16 +258,16 @@ function drop(e) {
     cardDiv.dataset.color = currCard.color;
     cardDiv.dataset.value = currCard.value;
     cardDiv.dataset.active = "true";
-    cardDiv.draggable = "true";
-    cardDiv.firstChild.setAttribute('src', `${currCard.front}`);
+    let image = cardDiv.firstChild
+    image.setAttribute('src', `${currCard.front}`);
     // cardDiv.setAttribute("style", `background-image: url(${currCard.front});`);
     cardDiv.id = `${currCard.value}${currCard.suit.charAt(0)}`;
-
+    cardDiv.draggable = "true";
     // Set event listeners for drag and drop usage
+    
     cardDiv.addEventListener('dragstart', dragStart);
     cardDiv.addEventListener('dragover', allowDrop);
     cardDiv.addEventListener('drop', drop);
-    
   }
   
   /* Create 4 ace piles 
@@ -279,10 +286,19 @@ function drop(e) {
   for(i = 0; i < 7; i++) 
   {
      let pile = createField(i + 1, ".middle", `playPile${i + 1}`);
+     let placeholderCard = Object.create(card);
+     placeholderCard.value = 14;
+     placeholderCard.color = "colorless";
+     placeholderCard.usableCardDiv = placeholderCard.cardDiv("nothing");
+     placeholderCard = [placeholderCard];
+     appendCard(placeholderCard, playPileCenter[`playPile${i + 1}`], `#${pile.id}`, "playPile", 1)
      // Append up to 7 cards to the current pile, depending on the current pile number, i + 1
      for(j = 0; j < i + 1; j++) 
      {
-
+        let placeholderCard = Object.create(card);
+        placeholderCard.value = 14;
+        placeholderCard.usableCardDiv = placeholderCard.cardDiv("nothing");
+        placeholderCard = [placeholderCard];
         let currCard = appendCard(shuffled, playPileCenter[`playPile${i + 1}`], `#${pile.id}`, "playPile", 1);
         console.log('it appended')
         if (j == i)
@@ -293,7 +309,6 @@ function drop(e) {
         else
         {
             // Flip cards to their backs if they are under the top card in the 
-            currCard.usableCardDiv.setAttribute("style", `background-image: url(${cardBack});`);
         }
      }
   }
