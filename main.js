@@ -10,16 +10,16 @@ let playPileCenter = {
   let cards=[];
   let cardBack = "cardBacks/abstract_clouds.svg"
   let card = {
-      cardDiv: function(img) {
+      createCardDiv: function(img) {
           cardDiv = document.createElement('div');
           cardDiv.classList.add("card", "fill");
           let newSVG = document.createElement('img');
           newSVG.src = cardBack;
           newSVG.classList.add("image", "fill");
           cardDiv.appendChild(newSVG);
-          return usableCardDiv = cardDiv;
+          return cardDiv = cardDiv;
       },
-      usableCardDiv: "ITS NOT UNDEFINED ITS JUST NOT DOING ANYTHING",
+      cardDiv: "ITS NOT UNDEFINED ITS JUST NOT DOING ANYTHING",
       front: "",
       cardName: "",
       suit:"",
@@ -83,13 +83,13 @@ let playPileCenter = {
               newCard.value = j + 1;
   
               if (newCard.value <= 10){
-                    newCard.usableCardDiv = newCard.cardDiv(`singleCards/${newCard.suit}-${newCard.value}.svg`);
+                    newCard.cardDiv = newCard.createCardDiv(`singleCards/${newCard.suit}-${newCard.value}.svg`);
                  // console.log(newCard.cardDiv(`singleCards/${newCard.suit}-${newCard.value}.svg`));
 
                     newCard.front = `singleCards/${newCard.suit}-${newCard.value}.svg`;
               }
               else{
-                    newCard.usableCardDiv = newCard.cardDiv(`singleCards/${newCard.suit}-${newCard.value}-${newCard.cardName}.svg`);
+                    newCard.cardDiv = newCard.createCardDiv(`singleCards/${newCard.suit}-${newCard.value}-${newCard.cardName}.svg`);
                     newCard.front = `singleCards/${newCard.suit}-${newCard.value}-${newCard.cardName}.svg`; 
               }
               
@@ -109,7 +109,7 @@ let playPileCenter = {
       console.log(deckArray)
       let currCardArray = deckArray.splice(0, spliceRemove);
       let dropDiv = document.querySelector(dropIdOrClass);
-      //console.log(currCard[0].usableCardDiv);
+      //console.log(currCard[0].cardDiv);
 
       // Places the card in the memory in dropArray and visually in the gui representation
       for(let i = spliceRemove - 1; i > -1; i--) {
@@ -119,11 +119,11 @@ let playPileCenter = {
         console.log(currCard)
         console.log(currCard)
         console.log(i)
-        console.log(currCard.usableCardDiv)
-        currCard.usableCardDiv.classList.add("childCard")
+        console.log(currCard.cardDiv)
+        currCard.cardDiv.classList.add("childCard")
         dropArray.unshift(currCard);
-        dropDiv.appendChild(currCard.usableCardDiv)
-        dropDiv = currCard.usableCardDiv;
+        dropDiv.appendChild(currCard.cardDiv)
+        dropDiv = currCard.cardDiv;
       }
       // currCard[0].cardDiv().setAttribute('style', 'background-image = ${') = `${currCard[0].img})`;
       console.log(dropArray);
@@ -252,11 +252,11 @@ function drop(e) {
   }
 
 
-  /* Add all identifying card information to the usableCardDiv and add event listeners to listen for drops and drags for each active/visible card */ 
+  /* Add all identifying card information to the cardDiv and add event listeners to listen for drops and drags for each active/visible card */ 
   function turnCardActive(currCard) 
   {
     // Set all div information
-    cardDiv = currCard.usableCardDiv;
+    cardDiv = currCard.cardDiv;
     cardDiv.dataset.suit = currCard.suit;
     cardDiv.dataset.color = currCard.color;
     cardDiv.dataset.value = currCard.value;
@@ -295,10 +295,10 @@ function drop(e) {
      placeholderCard.value = 14;
      placeholderCard.color = "colorless";
      placeholderCard.front = "cardBacks/blank_card.svg"
-     placeholderCard.usableCardDiv = placeholderCard.cardDiv("nothing");
+     placeholderCard.cardDiv = placeholderCard.createCardDiv("nothing");
 
-     placeholderCard.usableCardDiv.classList.add("ghost", "hide");
-     placeholderCard.usableCardDiv.firstChild.src = "cardBacks/blank_card.svg"
+     placeholderCard.cardDiv.classList.add("ghost", "hide");
+     placeholderCard.cardDiv.firstChild.src = "cardBacks/blank_card.svg"
      placeholderCard = [placeholderCard];
      appendCard(placeholderCard, playPileCenter[`playPile${i + 1}`], `#${pile.id}`, "playPile", 1)
 
