@@ -38,19 +38,19 @@ let playPileCenter = {
   }
   
   /* Returns a shuffled deck array of size 52 */
-  function shuffle()
-  {
-      let shuffledDeck = [];
-  
+  function shuffle(deck)
+  { 
+    let shuffled = [];
+
       for (let i = 0; i < 52; i++)
       {
-         shuffledDeck[i] = getRandomCard(cards);
-         //console.log(`the cards length is ${array.length} and i is ${i}`);
+         shuffled[i] = getRandomCard(deck);
       }
-      return shuffledDeck;
+      //console.log(shuffled);
+      return shuffled;
   }
   
-  function drawCard(array)
+  function drawCard(deckArray, discardArray)
   {
       let card = array.shift();
       array.unshift(card);
@@ -60,9 +60,9 @@ let playPileCenter = {
   /* Initalize all object information for a standard 52 card deck, including: 
      the suit of a card: card.suit*/
 
-  function createDeck(array)
+  function createDeck()
   {
-      
+    let unshuffled = [];
       for (let i = 0; i < suits.length; i++)
       {
           for (let j = 0; j < names.length; j++)
@@ -93,10 +93,10 @@ let playPileCenter = {
                     newCard.front = `singleCards/${newCard.suit}-${newCard.value}-${newCard.cardName}.svg`; 
               }
               
-              array.push(newCard);
-          }
-          
-      }
+              unshuffled.push(newCard);
+          }   
+      } 
+    return unshuffled;
   }
 
 
@@ -106,7 +106,7 @@ let playPileCenter = {
    and the container of dropArray: found by dropIdOrClass  */
   function appendCard(deckArray, dropArray, dropIdOrClass, pileType, spliceRemove) 
   {
-    console.log(deckArray)
+      console.log(deckArray)
       let currCardArray = deckArray.splice(0, spliceRemove);
       let dropDiv = document.querySelector(dropIdOrClass);
       //console.log(currCard[0].usableCardDiv);
@@ -114,7 +114,7 @@ let playPileCenter = {
       // Places the card in the memory in dropArray and visually in the gui representation
       for(let i = spliceRemove - 1; i > -1; i--) {
 
-        currCard = currCardArray[i]
+        let currCard = currCardArray[i]
         console.log(`SPLICE REMOVE LOOP ####################`)
         console.log(currCard)
         console.log(currCard)
@@ -144,7 +144,9 @@ let playPileCenter = {
        e.target.classList.add('hide');
     }, 0); */
 }
-
+    function drawClick(e) {
+        
+    }
 
 /*  Drops the currently selected card on top of another both in memory and visually if it meets certain conditions
     dependent on the dropDiv's class */
@@ -183,6 +185,7 @@ function drop(e) {
     if (draggedCard.dataset.color != dropCard.dataset.color &&
         (draggedCard.dataset.value == dropCard.dataset.value - 1))
         {
+            // Determines the stack size of a card pile by filtering out every image from the children, technically could do draggedCard.childrenCount / 2 and round as well
             let stackSize = draggedCard.children;
             console.log()
             stackSize = Array.from(stackSize);
@@ -195,10 +198,10 @@ function drop(e) {
             appendCard(draggedCardArray, droppedCardArray,`#${draggedCardPile.id}`, `between`, stackSize)
             // Turn the new top card to an active state
             turnCardActive(draggedCardArray[0])
-            console.log(`${i}th loop header /n /n`)
+            /* console.log(`${i}th loop header /n /n`)
             console.log(draggedCardArray[0])
             console.log(draggedCardArray)
-            console.log(droppedCardArray)
+            console.log(droppedCardArray) */
             
             // Console.log function to keep track of arrays in memory
             for(let i = 0; i < 7; i++) {
@@ -219,8 +222,8 @@ function drop(e) {
                 }
 
             }
-            console.log(playPileCenter[draggedCardPile.id])
-            console.log(playPileCenter[dropCardPile.id])
+            /* console.log(playPileCenter[draggedCardPile.id])
+            console.log(playPileCenter[dropCardPile.id]) */
             // Append the current div to the dropDiv visually to follow the memory
             dropCard.classList.add("new-pile");
             dropCard.appendChild(draggedCard);
@@ -258,6 +261,7 @@ function drop(e) {
     cardDiv.dataset.color = currCard.color;
     cardDiv.dataset.value = currCard.value;
     cardDiv.dataset.active = "true";
+    cardDiv.classList.remove("hide");
     let image = cardDiv.firstChild
     image.setAttribute('src', `${currCard.front}`);
     // cardDiv.setAttribute("style", `background-image: url(${currCard.front});`);
@@ -278,27 +282,30 @@ function drop(e) {
   */
 
   // Initial deck creation and shuffling
-  let unShuffled = createDeck(cards);
-  let dictDeck = unShuffled;
+  let unShuffled = createDeck();
+  let dictDeck = createDeck().reverse();
   let shuffled = shuffle(unShuffled);
-  
+  //let dictDeck = unShuffled;
   /* Create and fill 7 play piles AND convert all top cards into their active counterpart */
   for(i = 0; i < 7; i++) 
   {
      let pile = createField(i + 1, ".middle", `playPile${i + 1}`);
+     // Adds a placeholder card to the array both visually and in memory to allow for kings to go on an empty stack and for the last card on a stack to be moved off of the playPile
      let placeholderCard = Object.create(card);
      placeholderCard.value = 14;
      placeholderCard.color = "colorless";
+     placeholderCard.front = "cardBacks/blank_card.svg"
      placeholderCard.usableCardDiv = placeholderCard.cardDiv("nothing");
+
+     placeholderCard.usableCardDiv.classList.add("ghost", "hide");
+     placeholderCard.usableCardDiv.firstChild.src = "cardBacks/blank_card.svg"
      placeholderCard = [placeholderCard];
      appendCard(placeholderCard, playPileCenter[`playPile${i + 1}`], `#${pile.id}`, "playPile", 1)
+
      // Append up to 7 cards to the current pile, depending on the current pile number, i + 1
      for(j = 0; j < i + 1; j++) 
      {
-        let placeholderCard = Object.create(card);
-        placeholderCard.value = 14;
-        placeholderCard.usableCardDiv = placeholderCard.cardDiv("nothing");
-        placeholderCard = [placeholderCard];
+        // CHANGE DECK BACK TO SHUFFLED LATER
         let currCard = appendCard(shuffled, playPileCenter[`playPile${i + 1}`], `#${pile.id}`, "playPile", 1);
         console.log('it appended')
         if (j == i)
@@ -312,3 +319,6 @@ function drop(e) {
         }
      }
   }
+createField(1, ".top", 'deckPile');
+createField(1, ".top", 'discardPile');
+
