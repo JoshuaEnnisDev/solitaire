@@ -50,12 +50,34 @@ let playPileCenter = {
       return shuffled;
   }
   
-  function drawCard(deckArray, discardArray)
-  {
-      let card = array.shift();
-      array.unshift(card);
-      return card;
-  }
+function drawCard(e)
+{
+    // Checks to ensure the deck isnt empty, if it is, then set the deck equal to the flipped over discard pile and empty out the elements from under the discard pile div using JQuery
+    if (shuffled.length == 0) 
+    {
+        shuffled = discardPile.reverse();
+        discardPile = [];
+        $(document).ready(function(){
+            $("#discardPile").empty();
+        });
+    }
+    else 
+    {
+        // Take the topmost card of the shuffled deck and place it into the discard pile, allowing usage through turnCardActive
+        let currCard = appendCard(shuffled, discardPile, '#discardPile', 'discardPile', 1);       
+        let lastCard = discardPile[1];
+        // If there is a card before the currently drawn one, turn it inactive, so that the user cannot pull and drop any card out of the discard pile stack
+        if (lastCard != null) 
+        {
+            lastCard.cardDiv.removeEventListener('dragstart', dragStart);
+            lastCard.cardDiv.removeEventListener('dragover', allowDrop);
+            lastCard.cardDiv.removeEventListener('drop', drop);
+        } 
+        turnCardActive(currCard);
+    }
+    // turnCardActive(currCard);
+}
+
 
   /* Initalize all object information for a standard 52 card deck, including: 
      the suit of a card: card.suit*/
@@ -108,6 +130,7 @@ let playPileCenter = {
   {
       console.log(deckArray)
       let currCardArray = deckArray.splice(0, spliceRemove);
+      console.log(currCardArray)
       let dropDiv = document.querySelector(dropIdOrClass);
       //console.log(currCard[0].cardDiv);
 
@@ -124,7 +147,7 @@ let playPileCenter = {
         dropArray.unshift(currCard);
         dropDiv.appendChild(currCard.cardDiv)
         dropDiv = currCard.cardDiv;
-      }
+      } 
       // currCard[0].cardDiv().setAttribute('style', 'background-image = ${') = `${currCard[0].img})`;
       console.log(dropArray);
      // console.log(currCard[0].cardName);
@@ -180,10 +203,12 @@ function drop(e) {
     console.log(draggedCardPile)
     console.log(draggedCard.id)
     console.log(dropCard.id)
+    let droppedCardArray = playPileCenter[dropCardPile.id]
     // Checks the draggedCard's color and value to see if it is eligible to be dropped on the dropCard
         // if so, places the dragged card on top of the drop card event both in memory and visually
     if (draggedCard.dataset.color != dropCard.dataset.color &&
-        (draggedCard.dataset.value == dropCard.dataset.value - 1))
+        (draggedCard.dataset.value == dropCard.dataset.value - 1) &&
+        draggedCardPile.classList.contains('playPile'))
         {
             // Determines the stack size of a card pile by filtering out every image from the children, technically could do draggedCard.childrenCount / 2 and round as well
             let stackSize = draggedCard.children;
@@ -193,9 +218,9 @@ function drop(e) {
             stackSize = stackSize.length + 1;
             console.log(`stacksize: ${stackSize}`);
             let draggedCardArray = playPileCenter[draggedCardPile.id]
-            let droppedCardArray = playPileCenter[dropCardPile.id]
+            droppedCardArray = playPileCenter[dropCardPile.id]
             // Append the current dragged card and its children to the current dropcard
-            appendCard(draggedCardArray, droppedCardArray,`#${draggedCardPile.id}`, `between`, stackSize)
+            appendCard(draggedCardArray, droppedCardArray,`#${dropCardPile.id}`, `between`, stackSize)
             // Turn the new top card to an active state
             turnCardActive(draggedCardArray[0])
             /* console.log(`${i}th loop header /n /n`)
@@ -226,19 +251,25 @@ function drop(e) {
             console.log(playPileCenter[dropCardPile.id]) */
             // Append the current div to the dropDiv visually to follow the memory
             dropCard.classList.add("new-pile");
-            dropCard.appendChild(draggedCard);
         //  draggedCard.classList.remove('hide');
 
     }
-    else
+    // Handle a draggedCard from the discard pile instead of between play piles
+    else if (draggedCard.dataset.color != dropCard.dataset.color &&
+        (draggedCard.dataset.value == dropCard.dataset.value - 1) &&
+        draggedCardPile.classList.contains('discardPile'))
     {
-
+        // Use append card to pull the topmost card from the discard pile and put it in the corresponding dropPile
+        appendCard(discardPile, droppedCardArray, `#${dropCardPile.id}`, 'discard', 1)
+        dropCard.appendChild(draggedCard);
+        // Turns the new topmost card active
+        turnCardActive(discardPile[0]);
     }
 }
 
 
   /* Create field div, set its class and id to the idName, and append it to the containerClass div */
-  function createField(size, containerClass, idName)
+  function createField(size, containerClass, idName, fieldClass)
   {
       
       
@@ -246,6 +277,7 @@ function drop(e) {
       let pile = document.createElement('div');
       pile.id = idName;
       pile.classList.add("pile");
+      pile.classList.add(`${fieldClass}`)
       container.appendChild(pile);
       return pile;
       
@@ -256,7 +288,7 @@ function drop(e) {
   function turnCardActive(currCard) 
   {
     // Set all div information
-    cardDiv = currCard.cardDiv;
+    let cardDiv = currCard.cardDiv;
     cardDiv.dataset.suit = currCard.suit;
     cardDiv.dataset.color = currCard.color;
     cardDiv.dataset.value = currCard.value;
@@ -289,7 +321,7 @@ function drop(e) {
   /* Create and fill 7 play piles AND convert all top cards into their active counterpart */
   for(i = 0; i < 7; i++) 
   {
-     let pile = createField(i + 1, ".middle", `playPile${i + 1}`);
+     let pile = createField(i + 1, ".middle", `playPile${i + 1}`, `playPile`);
      // Adds a placeholder card to the array both visually and in memory to allow for kings to go on an empty stack and for the last card on a stack to be moved off of the playPile
      let placeholderCard = Object.create(card);
      placeholderCard.value = 14;
@@ -319,6 +351,16 @@ function drop(e) {
         }
      }
   }
-createField(1, ".top", 'deckPile');
-createField(1, ".top", 'discardPile');
+
+/* Initialize deck, discard pile, and the corresponding button that controls the card drawing system*/
+let deckDiv = createField(1, ".top", 'deckPile', 'deckPile');
+let discardPile = [];
+let drawButton = document.createElement("button");
+drawButton.classList.add("card");
+let drawImg = document.createElement("img")
+drawImg.src = "cardBacks/abstract_clouds.svg"
+drawButton.appendChild(drawImg)
+deckDiv.appendChild(drawButton);
+drawButton.addEventListener('click', drawCard)
+let discardDiv = createField(1, ".top", 'discardPile', 'discardPile');
 
