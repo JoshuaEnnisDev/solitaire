@@ -13,10 +13,11 @@ let playPileCenter = {
       createCardDiv: function(img) {
           cardDiv = document.createElement('div');
           cardDiv.classList.add("card", "fill");
-          let newSVG = document.createElement('img');
+          cardDiv.setAttribute("style", `background-image: url(${cardBack}); background-size:contain;`);
+          /* let newSVG = document.createElement('img');
           newSVG.src = cardBack;
           newSVG.classList.add("image", "fill");
-          cardDiv.appendChild(newSVG);
+          cardDiv.appendChild(newSVG); */
           return cardDiv = cardDiv;
       },
       cardDiv: "ITS NOT UNDEFINED ITS JUST NOT DOING ANYTHING",
@@ -24,6 +25,7 @@ let playPileCenter = {
       cardName: "",
       suit:"",
       color: "",
+      id: "",
       value : 0
   }
   
@@ -114,7 +116,7 @@ function drawCard(e)
                     newCard.cardDiv = newCard.createCardDiv(`singleCards/${newCard.suit}-${newCard.value}-${newCard.cardName}.svg`);
                     newCard.front = `singleCards/${newCard.suit}-${newCard.value}-${newCard.cardName}.svg`; 
               }
-              
+              newCard.id = `${newCard.value}${newCard.suit.charAt(0)}`;
               unshuffled.push(newCard);
           }   
       } 
@@ -146,7 +148,6 @@ function drawCard(e)
         currCard.cardDiv.classList.add("childCard")
         dropArray.unshift(currCard);
         dropDiv.appendChild(currCard.cardDiv)
-        dropDiv = currCard.cardDiv;
       } 
       // currCard[0].cardDiv().setAttribute('style', 'background-image = ${') = `${currCard[0].img})`;
       console.log(dropArray);
@@ -211,14 +212,12 @@ function drop(e) {
         draggedCardPile.classList.contains('playPile'))
         {
             // Determines the stack size of a card pile by filtering out every image from the children, technically could do draggedCard.childrenCount / 2 and round as well
-            let stackSize = draggedCard.children;
-            console.log()
-            stackSize = Array.from(stackSize);
-            stackSize = stackSize.filter(element => !(element.classList.contains("image")));
-            stackSize = stackSize.length + 1;
-            console.log(`stacksize: ${stackSize}`);
+            let stackSize = 1;
             let draggedCardArray = playPileCenter[draggedCardPile.id]
             droppedCardArray = playPileCenter[dropCardPile.id]
+            stackSize = draggedCardArray.indexOf(draggedCardArray.filter(currCard => currCard.id == draggedCard.id)[0]) + 1
+            console.log(draggedCardArray.filter(currCard => currCard.id == draggedCard.id)[0])
+            console.log(`stacksize: ${stackSize}`);
             // Append the current dragged card and its children to the current dropcard
             appendCard(draggedCardArray, droppedCardArray,`#${dropCardPile.id}`, `between`, stackSize)
             // Turn the new top card to an active state
@@ -261,7 +260,6 @@ function drop(e) {
     {
         // Use append card to pull the topmost card from the discard pile and put it in the corresponding dropPile
         appendCard(discardPile, droppedCardArray, `#${dropCardPile.id}`, 'discard', 1)
-        dropCard.appendChild(draggedCard);
         // Turns the new topmost card active
         turnCardActive(discardPile[0]);
     }
@@ -294,10 +292,10 @@ function drop(e) {
     cardDiv.dataset.value = currCard.value;
     cardDiv.dataset.active = "true";
     cardDiv.classList.remove("hide");
-    let image = cardDiv.firstChild
-    image.setAttribute('src', `${currCard.front}`);
-    // cardDiv.setAttribute("style", `background-image: url(${currCard.front});`);
-    cardDiv.id = `${currCard.value}${currCard.suit.charAt(0)}`;
+    /* let image = cardDiv.firstChild
+    image.setAttribute('src', `${currCard.front}`); */
+    cardDiv.setAttribute("style", `background-image: url(${currCard.front}); background-size:contain;`);
+    cardDiv.id = `${currCard.id}`;
     cardDiv.draggable = "true";
     // Set event listeners for drag and drop usage
     
@@ -330,7 +328,7 @@ function drop(e) {
      placeholderCard.cardDiv = placeholderCard.createCardDiv("nothing");
 
      placeholderCard.cardDiv.classList.add("ghost", "hide");
-     placeholderCard.cardDiv.firstChild.src = "cardBacks/blank_card.svg"
+     cardDiv.setAttribute("style", `background-image: url(cardBacks/blank_card.svg); background-size:contain;`);
      placeholderCard = [placeholderCard];
      appendCard(placeholderCard, playPileCenter[`playPile${i + 1}`], `#${pile.id}`, "playPile", 1)
 
